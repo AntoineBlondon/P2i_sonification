@@ -1,12 +1,12 @@
 import tkinter as tk 
 from tkinter import filedialog
 from PIL import Image, ImageTk
-
+from image_vers_son_v3 import sonifier
 
 class Fenetre(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.geometry("450x300")
+        self.geometry("450x400")
         self.title("Sonification")
         self.image_pil =  None 
         self.photo_image = None 
@@ -31,7 +31,7 @@ class Fenetre(tk.Tk):
             self.bouton_sonifier.config(state=tk.NORMAL)
     
     def sonifier_image(self):
-        ...
+        sonifier(self.image_pil)
 
 if __name__=="__main__":
 
