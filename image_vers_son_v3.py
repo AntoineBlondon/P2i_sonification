@@ -64,5 +64,6 @@ def sonifier(image):
 
             time = 10  # Espacement entre les notes
 
+
     # Sauvegarde
     mid.save("image_musique.mid")
