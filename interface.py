@@ -1,7 +1,7 @@
 import tkinter as tk 
 from tkinter import filedialog
 from PIL import Image, ImageTk
-from image_vers_son_v3 import sonifier
+from image_vers_son_v4 import sonifier
 
 class Fenetre(tk.Tk):
     def __init__(self):
