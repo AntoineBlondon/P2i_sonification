@@ -1,10 +1,13 @@
-import pygame
+import rtmidi
+from mido import MidiFile
 
-pygame.init()
+# 1) create a JACK‐based MidiOut (using rtapi=…)
+midiout = rtmidi.MidiOut(rtapi=rtmidi.API_UNIX_JACK)
+midiout.open_virtual_port("Sonification")
 
-pygame.mixer.music.load("image_musique.mid")
+# 2) load your .mid file
+mid = MidiFile('image_musique.mid')
 
-pygame.mixer.music.play()
-
-while pygame.mixer.music.get_busy():
-    pygame.time.Clock().tick(10)
+# 3) send them straight to JACK
+for msg in mid.play():
+    midiout.send_message(msg.bytes())

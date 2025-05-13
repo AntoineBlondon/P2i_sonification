@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 Dt = 50
 
 def add_chord_to_track(track, chord, duration=Dt):
+    if len(chord) == 0:
+        track.append(Message('program_change', program=0, time=duration))
     for note in chord:
         track.append(Message('note_on', note=note, velocity=64, time=0))
     for i, note in enumerate(chord):
