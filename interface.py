@@ -31,7 +31,7 @@ class Fenetre(tk.Tk):
             self.bouton_sonifier.config(state=tk.NORMAL)
     
     def sonifier_image(self):
-        sonifier(self.image_pil)
+        sonifier(self.image_pil, True)
 
 if __name__=="__main__":
 
