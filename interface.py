@@ -1,8 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog
 from PIL import Image, ImageTk
-from image_vers_son_v4 import sonifier
-from mid2wav import to_piano_wav
+from image_vers_son_v4 import sonifier, to_piano_wav
 import os
 
 class Fenetre(tk.Tk):
