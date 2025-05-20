@@ -2,7 +2,7 @@
 from PIL import Image
 from mido import Message, MidiFile, MidiTrack
 import numpy
-from traitement import contour, fermeture, ouverture, apply_threshold
+from traitement import contour, fermeture, apply_threshold
 import matplotlib.pyplot as plt
 Dt = 50
 

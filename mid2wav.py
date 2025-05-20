@@ -2,72 +2,50 @@ import numpy as np
 import pretty_midi
 from scipy.io.wavfile import write
 
-# 1) ADSR envelope generator
-def make_adsr(sr, length_s, attack=0.005, decay=0.1, sustain_level=0.6, release=0.2):
-    n = int(length_s * sr)
-    a = int(attack  * sr)
-    d = int(decay   * sr)
-    r = int(release * sr)
-    s = max(0, n - (a + d + r))
-    # attack:     0 → 1
-    env_a = np.linspace(0, 1, a,   endpoint=False)
-    # decay:      1 → sustain_level
-    env_d = np.linspace(1, sustain_level, d, endpoint=False)
-    # sustain:    sustain_level flat
-    env_s = np.full(s, sustain_level)
-    # release:    sustain_level → 0
-    env_r = np.linspace(sustain_level, 0, r, endpoint=False)
-    env = np.concatenate((env_a, env_d, env_s, env_r))
-    # pad or trim to exactly n samples
-    if len(env) < n:
-        env = np.pad(env, (0, n - len(env)))
-    else:
-        env = env[:n]
-    return env
-
-# 2) a “piano-like” partial series (you can tweak these amplitudes)
-PARTIAL_AMPS = [1.00, 0.60, 0.40, 0.25, 0.16, 0.10, 0.06, 0.04]
-
-def synth_note(note, duration_s, velocity, sr):
-    """
-    Return a numpy array of length duration_s*sr
-    containing a weighted sum of sine-partials × ADSR envelope.
-    """
-    length = int(duration_s * sr)
-    t = np.arange(length) / sr
-    # fundamental frequency
-    f0 = 440.0 * 2 ** ((note - 69) / 12)
-    # sum up partials
-    wave = sum(amp * np.sin(2 * np.pi * f0 * (i+1) * t)
-               for i, amp in enumerate(PARTIAL_AMPS))
-    # normalize so partial mix doesn’t clip
-    wave = wave / np.max(np.abs(wave))
-    # apply velocity (0…1) and envelope
-    env = make_adsr(sr, duration_s)
-    return wave * env * velocity
 
 def piano_wave(phase: np.ndarray) -> np.ndarray:
+    """Génère un son de piano par synthèse additive d'harmoniques
+
+    Cette fonction somme un ensemble prédéfini d'harmoniques (partielles)
+    pour des angle de phase donnés, puis normalise le résultat entre -1 et 1
+
+
+    Args:
+        phase (np.ndarray):
+            Liste des valeurs de phase (en radians)
+
+    Returns:
+        np.ndarray:
+            Liste des valeurs d'amplitudes synthétisées (normalisées entre [-1, 1])
+    """
     PARTIAL_AMPS = [1.00, 0.60, 0.40, 0.25, 0.16, 0.10, 0.06, 0.04]
     sig = sum(amp * np.sin((i+1)*phase)
               for i, amp in enumerate(PARTIAL_AMPS))
     return sig / np.max(np.abs(sig))
 
-def to_piano_wav(midi_path, wav_path, fs=44100, amplitude=0.2):
-    # 2) Load with PrettyMIDI (handles tempo maps, multiple tracks, etc.)
+def to_piano_wav(midi_path, wav_path, fs=44100):
+    """Convertit un fichier MIDI en un fichier WAV en utilisant la synthèse de son de piano
+
+    Args:
+        midi_path (str):
+            Chemin du fichier MIDI d'entrée
+        wav_path (str):
+            Chemin de sortie du fichier WAV
+        fs (int, optional):
+            Fréquence d'échantillonnage (en Hz) (la valeur par défaut et 44100 Hz)
+
+    Returns:
+        None
+    """
     pm = pretty_midi.PrettyMIDI(midi_path)
 
-    # 3) (Optional) force the GM program to Acoustic Grand Piano
     for inst in pm.instruments:
         if not inst.is_drum:
             inst.program = pretty_midi.instrument_name_to_program('Acoustic Grand Piano')
 
-    # 4) Let PrettyMIDI “synthesize” every note you’ve added,
-    #    using your piano_wave + ADSR, and it’ll give you the *full* waveform
     audio = pm.synthesize(
         fs=fs,
-        wave=lambda phase: piano_wave(phase),
-        # you can’t directly pass an envelope here, so
-        # build your ADSR into the wave or post-process each note
+        wave=piano_wave
     )
 
     # 5) normalize + write
