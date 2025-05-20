@@ -62,7 +62,7 @@ def find_note(position, major=False):
 
 
 
-def sonifier(image, show=False):
+def sonifier(image, show=False, output_name='image_musique.mid'):
     """Transforme une image en fichier MIDI
 
     Args:
@@ -93,4 +93,4 @@ def sonifier(image, show=False):
                   if x>0 ]
         add_chord_to_track(track, chord, Dt)
 
-    mid.save("image_musique.mid")
+    mid.save(output_name)

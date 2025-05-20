@@ -1,12 +1,15 @@
-import tkinter as tk 
+import tkinter as tk
 from tkinter import filedialog
 from PIL import Image, ImageTk
 from image_vers_son_v4 import sonifier
+from mid2wav import to_piano_wav
+from time import sleep
+import os
 
 class Fenetre(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.geometry("450x400")
+        self.geometry("450x450")
         self.title("Sonification")
         self.image_pil =  None 
         self.photo_image = None 
@@ -21,6 +24,11 @@ class Fenetre(tk.Tk):
         self.bouton_sonifier = tk.Button(self, text="Sonifier", command=self.sonifier_image, state=tk.DISABLED)
         self.bouton_sonifier.pack(pady=10)
 
+        
+        self.bouton_jouer = tk.Button(self, text="Jouer", command=self.play, state=tk.DISABLED)
+        self.bouton_jouer.pack(pady=10)
+
+
     def charger_image(self):
         filepath = filedialog.askopenfilename(filetypes=[("Images", "*.png *.jpg *.jpeg *.bmp")])
         if filepath:
@@ -32,6 +40,12 @@ class Fenetre(tk.Tk):
     
     def sonifier_image(self):
         sonifier(self.image_pil, True)
+        to_piano_wav('image_musique.mid', 'output.wav')
+        self.bouton_jouer.config(state=tk.NORMAL)
+
+    def play(self):
+        os.system("aplay -q " + 'output.wav')
+        
 
 if __name__=="__main__":
 
