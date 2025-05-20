@@ -3,7 +3,6 @@ from tkinter import filedialog
 from PIL import Image, ImageTk
 from image_vers_son_v4 import sonifier
 from mid2wav import to_piano_wav
-from time import sleep
 import os
 
 class Fenetre(tk.Tk):
@@ -13,6 +12,7 @@ class Fenetre(tk.Tk):
         self.title("Sonification")
         self.image_pil =  None 
         self.photo_image = None 
+        self.var_plot = 0
         
         self.bouton_charger = tk.Button(self,text="Charger une image", command=self.charger_image)
         self.bouton_charger.pack(pady=10)
@@ -27,6 +27,8 @@ class Fenetre(tk.Tk):
         
         self.bouton_jouer = tk.Button(self, text="Jouer", command=self.play, state=tk.DISABLED)
         self.bouton_jouer.pack(pady=10)
+
+        self.plot_box = tk.Checkbutton(self, text="Afficher les graphes", variable=self.var_plot, onvalue=1, offvalue=0)
 
 
     def charger_image(self):
