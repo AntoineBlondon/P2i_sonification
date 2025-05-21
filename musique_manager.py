@@ -4,7 +4,7 @@ from scipy.io import wavfile
 
 L = 0.86 # m
 mu = 13.9e-3 # ?
-T = 220 # N
+T = 500 # N
 duree = 0.1 # s
 
 fs = 11025 # Hz

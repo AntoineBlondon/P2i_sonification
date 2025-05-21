@@ -3,7 +3,7 @@ from mido import Message, MidiFile, MidiTrack
 import numpy as np
 import pretty_midi
 from scipy.io.wavfile import write
-from traitement import contour, fermeture, apply_threshold
+from traitement import convertir_en_contour_v2
 import matplotlib.pyplot as plt
 
 
@@ -121,14 +121,12 @@ def sonifier(image, show=False, output_name='image_musique.mid'):
     mid.tracks.append(track)
     track.append(Message('program_change', program=0, time=0))
 
-    img = fermeture(contour(apply_threshold(np.asarray(image))), 5)
-    img = Image.fromarray(img).resize((100, 70))
-    img = apply_threshold(np.asarray(img))
+    img = convertir_en_contour_v2(np.asarray(image), 10)
 
     if show: plt.figure()
     if show: plt.imshow(img, cmap="gray")
     if show: plt.show()
-    
+
     for y in np.transpose(img):
         chord = [ find_note(i)
                   for i, x in enumerate(reversed(y)) 

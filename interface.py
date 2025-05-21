@@ -12,7 +12,7 @@ class Fenetre(tk.Tk):
         
         self.image_pil =  None 
         self.photo_image = None 
-        self.midi_output = 'image_musique.midi'
+        self.midi_output = 'image_musique.mid'
         self.wav_output = 'ouput.wav'
         self.var_plot = tk.BooleanVar()
         
