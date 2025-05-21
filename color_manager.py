@@ -10,7 +10,6 @@ def find_nearest(array, value):
     return array[idx]
 
 
-rgb_color = (70, 149, 227)
 
 
 def rgb2hsv(rgb_color):
@@ -53,7 +52,6 @@ def hsv_to_chord(hsv_color: tuple[int, int, int], hue_degree_to_frequency: dict[
 
     return hue_degree_to_frequency.get(specific_color)
 
-print(hsv_to_chord(rgb2hsv(rgb_color), hue_degree_to_frequency))
 
 
 #note_col = note(hsv_to_chord(rgb2hsv(rgb_color)), 5, 5, 11025)
@@ -81,15 +79,13 @@ def histogramme_couleur(chemin_image: str) -> dict[int, int]:
     return histogramme_couleurs
 
 
-def create_notes(dictio):
+def colors_to_wav_file(histogramme_couleurs: dict[int, int]) -> None:
     notes = []
-    for freq, intensity in dictio.items():
-        notes.append(note(freq, 5, intensity * 10, 11024))
+    for freq, intensity in histogramme_couleurs.items():
+        notes.append(note(freq, duree=5, amplitude=10*intensity, fe=11025))
+
     final_chord = accord(notes)
-    writewavfile('chord.wav', final_chord, 11024)
+    writewavfile('chord.wav', final_chord, 11025)
 
 
 
-
-
-create_notes(a)

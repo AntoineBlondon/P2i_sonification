@@ -4,13 +4,8 @@ import numpy as np
 import pretty_midi
 from scipy.io.wavfile import write
 from traitement import convertir_en_contour_v2
+from color_manager import linear_range_mapping
 import matplotlib.pyplot as plt
-
-
-
-
-Dt = 50
-
 
 
 
@@ -35,7 +30,7 @@ def piano_wave(phase: np.ndarray) -> np.ndarray:
               for i, amp in enumerate(PARTIAL_AMPS))
     return sig / np.max(np.abs(sig))
 
-def to_piano_wav(midi_path, wav_path, fs=44100):
+def to_piano_wav(midi_path: str, wav_path: str, fs: int=44100) -> None:
     """Convertit un fichier MIDI en un fichier WAV en utilisant la synthèse de son de piano
 
     Args:
@@ -51,15 +46,10 @@ def to_piano_wav(midi_path, wav_path, fs=44100):
     """
     pm = pretty_midi.PrettyMIDI(midi_path)
 
-    for inst in pm.instruments:
-        if not inst.is_drum:
-            inst.program = pretty_midi.instrument_name_to_program('Acoustic Grand Piano')
-
     audio = pm.synthesize(
         fs=fs,
         wave=piano_wave
     )
-
 
     audio = audio / np.max(np.abs(audio))
     pcm   = (audio * 32767).astype(np.int16)
@@ -69,13 +59,13 @@ def to_piano_wav(midi_path, wav_path, fs=44100):
 
 
 
-def add_chord_to_track(track, chord, duration=Dt):
+def add_chord_to_track(track: MidiTrack, chord: list[int], duration: int=50) -> None:
     """Ajoute un accord à une MidiTrack
 
     Args:
         track (MidiTrack): La piste sur laquelle ajouter l'accord
         chord (List[int]): L'accord, représenté part une liste de notes à jouer (représentées par leur numéro)
-        duration (int, optional): La durée de l'accord. Defaults to Dt.
+        duration (int, optional): La durée de l'accord en ms. Defaults to 50 ms.
     """
     if len(chord) == 0:
         track.append(Message('program_change', program=0, time=duration))
@@ -89,25 +79,18 @@ def add_chord_to_track(track, chord, duration=Dt):
 
 
 
-def find_note(position, major=False):
-    """Renvoie le numero de la note correspondant à la position dans l'image
+def find_note(position: int) -> int:
+    """Renvoie le numero de la note correspondant à la position dans l'image, (on fait un mapping linéaire de [0; 70] à [40;82])
 
     Args:
         position (int): La ligne de la note
-        major (bool, optional): Si True, on transforme les notes pour qu'elles restent sur la gamme du Do Majeur. Defaults to False.
 
     Returns:
         int: Le numéro de la note
     """
-    min_note, max_note = 40, 70
+    return int(linear_range_mapping(position, (0, 70), (40, 82)))
 
-
-    value = min_note + ((position + 1) / 50) * (max_note - min_note)
-
-
-    return int(value)
-
-def sonifier(image, show=False, output_name='image_musique.mid'):
+def sonifier(image: Image, show: bool=False, output_name: str='image_musique.mid') -> None:
     """Transforme une image en fichier MIDI
 
     Args:
