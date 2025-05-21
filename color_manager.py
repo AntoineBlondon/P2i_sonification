@@ -16,8 +16,12 @@ rgb_color = (70, 149, 227)
 def rgb2hsv(rgb_color):
     return colorsys.rgb_to_hsv(rgb_color[0] / 255, rgb_color[1] / 255, rgb_color[2] / 255)
 
-def hsv_to_chord(hsv_color):
-    notes = [174, 185, 196, 208, 220, 233, 246, 261, 277, 293, 311, 329]
+notes = [
+    174, 185, 196, 208, 220, 233, 246, 261, 277, 293, 311, 329
+]
+    
+
+def hsv_to_chord(hsv_color, mapping):
 
     min, max = 174, 329
     diff = max - min

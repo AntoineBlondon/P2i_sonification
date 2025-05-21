@@ -5,6 +5,10 @@ import pretty_midi
 from scipy.io.wavfile import write
 from traitement import contour, fermeture, apply_threshold
 import matplotlib.pyplot as plt
+
+
+
+
 Dt = 50
 
 
@@ -56,7 +60,7 @@ def to_piano_wav(midi_path, wav_path, fs=44100):
         wave=piano_wave
     )
 
-    # 5) normalize + write
+
     audio = audio / np.max(np.abs(audio))
     pcm   = (audio * 32767).astype(np.int16)
     write(wav_path, fs, pcm)
@@ -95,57 +99,34 @@ def find_note(position, major=False):
     Returns:
         int: Le numéro de la note
     """
-    
-    C_MAJOR_OFFSETS = [0, 2, 4, 5, 7, 9, 11]
     min_note, max_note = 40, 70
 
-    
-    # 1) continuous mapping
+
     value = min_note + ((position + 1) / 50) * (max_note - min_note)
 
-    if not major:
-        return int(value)
-    
-    octave_start = min_note // 12
-    octave_end   = max_note // 12
-    candidates = [
-        12 * octave + offset
-        for octave in range(octave_start, octave_end + 1)
-        for offset in C_MAJOR_OFFSETS
-        if min_note <= 12 * octave + offset <= max_note
-    ]
 
-    # 3) pick the C-major note nearest to our continuous value
-    #    (ties broken by the first occurrence)
-    return min(candidates, key=lambda n: abs(n - value))
-
-
+    return int(value)
 
 def sonifier(image, show=False, output_name='image_musique.mid'):
     """Transforme une image en fichier MIDI
 
     Args:
         image (PIL.Image): L'image a sonifier
-        show (bool, optional): Si True, affiche l'image et ses différentes transformations avec matplotlib. Defaults to False.
+        show (bool, optional): Si True, affiche l'image et ses différentes transformations avec matplotlib. (Le défaut est False)
+        output_name (str, optional): Le nom du fichier MIDI à générer (Le défaut est 'image_musique.mid')
     """
 
     mid = MidiFile()
     track = MidiTrack()
     mid.tracks.append(track)
     track.append(Message('program_change', program=0, time=0))
-    img = contour(apply_threshold(np.asarray(image)))
-    if show: plt.subplot(2,2,1)
-    if show: plt.imshow(img, cmap="gray")
-    if show: plt.subplot(2,2,2)
-    img = fermeture(img, 5)
-    if show: plt.imshow(img, cmap="gray")
 
+    img = fermeture(contour(apply_threshold(np.asarray(image))), 5)
     img = Image.fromarray(img).resize((100, 70))
     img = apply_threshold(np.asarray(img))
-    if show: plt.subplot(2,2,3)
+    if show: plt.figure()
     if show: plt.imshow(img, cmap="gray")
     if show: plt.show()
-    time=0
     for y in np.transpose(img):
         chord = [ find_note(i)
                   for i, x in enumerate(reversed(y)) 
