@@ -124,9 +124,11 @@ def sonifier(image, show=False, output_name='image_musique.mid'):
     img = fermeture(contour(apply_threshold(np.asarray(image))), 5)
     img = Image.fromarray(img).resize((100, 70))
     img = apply_threshold(np.asarray(img))
+
     if show: plt.figure()
     if show: plt.imshow(img, cmap="gray")
     if show: plt.show()
+    
     for y in np.transpose(img):
         chord = [ find_note(i)
                   for i, x in enumerate(reversed(y)) 
