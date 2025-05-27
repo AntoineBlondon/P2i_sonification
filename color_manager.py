@@ -76,6 +76,10 @@ def histogramme_couleur(chemin_image: str) -> dict[int, int]:
 
     maximum = max(histogramme_couleurs.values())
     histogramme_couleurs = {frequency: intensity * 1 / maximum for frequency, intensity in histogramme_couleurs.items()}
+    plt.figure()
+    plt.imshow(histogramme_couleurs)
+    plt.show()
+    
     return histogramme_couleurs
 
 

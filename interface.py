@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import filedialog
 from PIL import Image, ImageTk
 from image_vers_son_v4 import sonifier, to_piano_wav
+from color_manager import histogramme_couleur, colors_to_wav_file
 import os
 
 class Fenetre(tk.Tk):
@@ -9,7 +10,6 @@ class Fenetre(tk.Tk):
         super().__init__()
         self.geometry("450x450")
         self.title("Sonification")
-        
         self.image_pil =  None 
         self.photo_image = None 
         self.midi_output = 'image_musique.mid'
