@@ -114,6 +114,6 @@ def sonifier(image: Image, show: bool=False, output_name: str='image_musique.mid
         chord = [ find_note(i)
                   for i, x in enumerate(reversed(y)) 
                   if x>0 ]
-        add_chord_to_track(track, chord, Dt)
+        add_chord_to_track(track, chord, 50)
 
     mid.save(output_name)
