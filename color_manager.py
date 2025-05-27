@@ -1,11 +1,19 @@
 import colorsys
 import numpy as np
-from PIL import Image
-import os
+import PIL
 from musique_manager import *
 import matplotlib.pyplot as plt
 
-def find_nearest(array, value):
+def find_nearest(array: list | np.ndarray, value: float | int) -> float | int:
+    """Trouve la valeur la plus proche dans la liste
+
+    Args:
+        array (list | np.ndarray): La liste dans laquelle chercher
+        value (float | int): La valeur à chercher
+
+    Returns:
+        float | int: La valeur de la liste trouvée
+    """
     array = np.asarray(array)
     idx = (np.abs(array - value)).argmin()
     return array[idx]
@@ -13,7 +21,15 @@ def find_nearest(array, value):
 
 
 
-def rgb2hsv(rgb_color):
+def rgb2hsv(rgb_color: tuple[int, int, int]) -> tuple[float, float, float]:
+    """Transforme une couleur RGB en format HSV
+
+    Args:
+        rgb_color (tuple[int, int, int]): La couleur en RGB (chaque valeur va de 0 à 255)
+
+    Returns:
+        tuple[float, float, float]: La même couleur en format HSV (chaque valeur va de 0 à 1)
+    """
     return colorsys.rgb_to_hsv(rgb_color[0] / 255, rgb_color[1] / 255, rgb_color[2] / 255)
 
 
@@ -35,6 +51,20 @@ hue_degree_to_frequency = {
 
 
 def linear_range_mapping(value: float, in_range: tuple[float, float], out_range: tuple[float, float]) -> float:
+    """Fait un mappage linéaire d'un intervalle à un autre
+
+    Exemple
+    >>> linear_range_mapping(20.0, (0.0, 50.0), (0.0, 1.0))
+    0.4
+
+    Args:
+        value (float): La valeur à mapper
+        in_range (tuple[float, float]): L'intervalle d'entrée
+        out_range (tuple[float, float]): L'intervalle de sortie
+
+    Returns:
+        float: value mappée à l'intervalle de sortie
+    """
     (min_in, max_in) = in_range
     (min_out, max_out) = out_range
 
@@ -44,7 +74,16 @@ def linear_range_mapping(value: float, in_range: tuple[float, float], out_range:
     return slope * value + origin
 
 
-def hsv_to_chord(hsv_color: tuple[int, int, int], hue_degree_to_frequency: dict[int, int]) -> int:
+def hsv_to_chord(hsv_color: tuple[float, float, float], hue_degree_to_frequency: dict[int, int]) -> int:
+    """Renvoie la fréquence associée à la couleur donnée
+
+    Args:
+        hsv_color (tuple[float, float, float]): La couleur en format HSV (chaque valeur va de 0 à 1)
+        hue_degree_to_frequency (dict[int, int]): Le dictionnaire qui mappe chaque teinte (en degrées) à chaque fréquence (en Hz)
+
+    Returns:
+        int: La fréquence de la couleur donnée
+    """
     hue_entre_0_et_1 = hsv_color[0]
 
     hue_in_degrees = int(linear_range_mapping(hue_entre_0_et_1, (0, 1), (0, 360))) % 360
@@ -55,15 +94,16 @@ def hsv_to_chord(hsv_color: tuple[int, int, int], hue_degree_to_frequency: dict[
 
 
 
-#note_col = note(hsv_to_chord(rgb2hsv(rgb_color)), 5, 5, 11025)
-#writewavfile('out.wav', note_col, 11025)
+def histogramme_couleur(image: PIL.Image, show: bool=False) -> dict[int, int]:
+    """Calcule l'histogramme des couleurs d'une image donnée
 
-#os.system(f"aplay -q out.wav")
+    Args:
+        image (PIL.Image): L'image RGB à traiter
+        show (bool, optional): Si True, plot l'histogramme avec matplotlib. Defaults to False.
 
-
-
-
-def histogramme_couleur(image: Image, show: bool=False) -> dict[int, int]:
+    Returns:
+        dict[int, int]: L'histogramme des couleurs de l'image
+    """
     histogramme_couleurs = {}
 
     for y in range(image.height):
@@ -85,6 +125,12 @@ def histogramme_couleur(image: Image, show: bool=False) -> dict[int, int]:
 
 
 def colors_to_wav_file(histogramme_couleurs: dict[int, int], output_name: str='chord.wav') -> None:
+    """Transforme un histogramme des couleurs en un fichier WAV
+
+    Args:
+        histogramme_couleurs (dict[int, int]): L'histogramme des couleurs associé à une image
+        output_name (str, optional): Le nom du fichier à enregistrer. Defaults to 'chord.wav'.
+    """
     notes = []
     for freq, intensity in histogramme_couleurs.items():
         notes.append(note(freq, duree=5, amplitude=10*intensity, fe=11025))
