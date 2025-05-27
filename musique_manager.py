@@ -123,15 +123,9 @@ def deplacement(mu, L, T, x, duree, fs):
 
     return u_range, t_range
 
-def deplacement_frot(mu, L, T, frequence, x, duree, fs, N_max=5):
+def deplacement_frot(L, frequence, x, duree, fs, N_max=5):
     t_range = np.linspace(0, duree, int(duree*fs))
     u_range = t_range * 0
-    
-    V = np.sqrt(T/mu)
-    omega_0 = np.pi * V / L
-    
-    U_max = 1
-    
     epsilon = 0.5e-3
     
 
@@ -140,7 +134,7 @@ def deplacement_frot(mu, L, T, frequence, x, duree, fs, N_max=5):
         for i, t in enumerate(t_range):
             s = 1
             s *= np.exp(-1 * (epsilon * fn * 2 * np.pi * t))
-            s *= np.sin(n * frequence * np.pi * x / L)
+            s *= np.sin(fn * np.pi * x / L)
             s *= (json['An'][n] * np.cos(2 * np.pi * fn * t) + json['Bn'][n] * np.sin(2 * np.pi * fn * t))
 
 
@@ -151,7 +145,7 @@ def deplacement_frot(mu, L, T, frequence, x, duree, fs, N_max=5):
 
 
 def note(f, duree, amplitude, fe):
-    return amplitude * deplacement_frot(mu, L, T, f, L/2, duree, fe, N_max=20)[0]
+    return amplitude * deplacement_frot(L, f, L/2, duree, fe, N_max=7)[0]
 
 
 

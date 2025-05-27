@@ -23,22 +23,22 @@ class Fenetre(tk.Tk):
         self.bouton_charger.place(x=0, y=0)
 
         # Bouton pour lancer la sonification
-        self.bouton_sonifier = tk.Button(self, text="Sonifier", command=self.sonifier_image, state=tk.DISABLED, width=13)
+        self.bouton_sonifier = tk.Button(self, text="Sonifier Contours", command=self.sonifier_image, state=tk.DISABLED, width=13)
         self.bouton_sonifier.place(x=0,y=30)
 
         
 
         # Bouton pour jouer le son
-        self.bouton_jouer = tk.Button(self, text="Jouer", command=self.play, state=tk.DISABLED, width=13)
+        self.bouton_jouer = tk.Button(self, text="Jouer Contours", command=self.play, state=tk.DISABLED, width=13)
         self.bouton_jouer.place(x=0,y=60)
 
         # Bouton pour ajouter couleur
-        self.bouton_couleur = tk.Button(self, text="Couleur", command=self.couleur)
+        self.bouton_couleur = tk.Button(self, text="Sonifier Couleurs", command=self.couleur, state=tk.DISABLED, width=13)
         self.bouton_couleur.place(x=0, y=90)
 
         #Bouton pour jouer couleurs
-        self.bouton_jouer_couleur = tk.Button(self, text="Jouer Couleur", command=self.playcolor, state=tk.DISABLED, width=13)
-        self.plot_box.place(x=0, y=120)
+        self.bouton_jouer_couleur = tk.Button(self, text="Jouer Couleurs", command=self.playcolor, state=tk.DISABLED, width=13)
+        self.bouton_jouer_couleur.place(x=0, y=120)
 
         # Checkbox pour afficher ou non les graphes
         self.plot_box = tk.Checkbutton(self, text="Afficher graphes", variable=self.var_plot, onvalue=True, offvalue=False)
@@ -53,20 +53,21 @@ class Fenetre(tk.Tk):
     def charger_image(self):
         filepath = filedialog.askopenfilename(filetypes=[("Images", "*.png *.jpg *.jpeg *.bmp")])
         if filepath:
-            self.image_pil = Image.open(filepath).convert("L")  # Convertir en niveaux de gris
-            image_redim = self.image_pil.resize((300, 300)) # 
+            self.image_pil = Image.open(filepath).convert("RGB") 
+            image_redim = self.image_pil.resize((300, 300))
             self.photo_image = ImageTk.PhotoImage(image_redim)
             self.label_image.config(image=self.photo_image)
             self.bouton_sonifier.config(state=tk.NORMAL)
+            self.bouton_couleur.config(state=tk.NORMAL)
     
     def sonifier_image(self):
-        sonifier(self.image_pil, self.var_plot.get())
+        sonifier(self.image_pil.convert('L'), self.var_plot.get())
         to_piano_wav(self.midi_output, self.wav_output)
         self.bouton_jouer.config(state=tk.NORMAL)
 
     def couleur(self): 
-        histogramme_couleur(self.image_pil)
-        colors_to_wav_file(self.color_midi, self.color_wav)
+        histo = histogramme_couleur(self.image_pil, self.var_plot.get())
+        colors_to_wav_file(histo, self.color_wav)
         self.bouton_jouer_couleur.config(state=tk.NORMAL)
 
     def playcolor(self):

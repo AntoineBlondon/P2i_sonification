@@ -3,6 +3,7 @@ import numpy as np
 from PIL import Image
 import os
 from musique_manager import *
+import matplotlib.pyplot as plt
 
 def find_nearest(array, value):
     array = np.asarray(array)
@@ -62,8 +63,7 @@ def hsv_to_chord(hsv_color: tuple[int, int, int], hue_degree_to_frequency: dict[
 
 
 
-def histogramme_couleur(chemin_image: str) -> dict[int, int]:
-    image = Image.open(chemin_image).convert("RGB")
+def histogramme_couleur(image: Image, show: bool=False) -> dict[int, int]:
     histogramme_couleurs = {}
 
     for y in range(image.height):
@@ -76,20 +76,21 @@ def histogramme_couleur(chemin_image: str) -> dict[int, int]:
 
     maximum = max(histogramme_couleurs.values())
     histogramme_couleurs = {frequency: intensity * 1 / maximum for frequency, intensity in histogramme_couleurs.items()}
-    plt.figure()
-    plt.imshow(histogramme_couleurs)
-    plt.show()
+    if show: plt.figure()
+    if show: plt.bar(histogramme_couleurs.keys(), histogramme_couleurs.values(), 10)
+    if show: plt.xticks(sorted(list(hue_degree_to_frequency.values())), ["Rouge", "Orange", "Jaune", "Chartreuse", "Vert", "Printemps", "Cyan", "Azur", "Bleu", "Violet", "Magenta", "Rose"], rotation=45)
+    if show: plt.show()
     
     return histogramme_couleurs
 
 
-def colors_to_wav_file(histogramme_couleurs: dict[int, int]) -> None:
+def colors_to_wav_file(histogramme_couleurs: dict[int, int], output_name: str='chord.wav') -> None:
     notes = []
     for freq, intensity in histogramme_couleurs.items():
         notes.append(note(freq, duree=5, amplitude=10*intensity, fe=11025))
 
     final_chord = accord(notes)
-    writewavfile('chord.wav', final_chord, 11025)
+    writewavfile(output_name, final_chord, 11025)
 
 
 
