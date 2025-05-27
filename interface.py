@@ -1,8 +1,8 @@
 import tkinter as tk
 from tkinter import filedialog
 from PIL import Image, ImageTk
-from image_vers_son_v4 import sonifier, to_piano_wav
-from color_manager import histogramme_couleur, colors_to_wav_file
+from contours_vers_son import sonifier, to_piano_wav
+from couleurs_vers_son import histogramme_couleur, colors_to_wav_file
 import os
 
 class Fenetre(tk.Tk):

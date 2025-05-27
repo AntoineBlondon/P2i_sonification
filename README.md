@@ -25,12 +25,11 @@ L’interface permet :
 ```
 sonification-des-images/
 ├── interface.py              # Interface utilisateur avec Tkinter
-├── image_vers_son_v4.py      # Logique de traitement et conversion image → son
-├── traitement.py             # Fonctions de traitement d’image pour les contours
-├── color_manager.py          # Fonctions de traitement des couleurs
-├── musique_manager.py        # Fonctions de synthèse de son pour les couleurs
+├── contours_vers_son.py      # Logique de traitement et conversion image → son
+├── utils_traitement.py       # Fonctions de traitement d’image pour les contours
+├── couleurs_vers_son.py      # Fonctions de traitement des couleurs
+├── utils_synthese.py         # Fonctions de synthèse de son pour les couleurs
 ├── images/                   # Dossier d'images de test
-├── output.wav                # Exemple de sortie audio (généré après sonification)
 └── README.md                 # Ce fichier
 ```
 

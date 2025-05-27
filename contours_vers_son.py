@@ -3,8 +3,8 @@ from mido import Message, MidiFile, MidiTrack
 import numpy as np
 import pretty_midi
 from scipy.io.wavfile import write
-from traitement import convertir_en_contour_v2
-from color_manager import linear_range_mapping
+from utils_traitement import convertir_en_contour_v2
+from couleurs_vers_son import linear_range_mapping
 import matplotlib.pyplot as plt
 
 

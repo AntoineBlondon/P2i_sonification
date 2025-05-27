@@ -1,7 +1,7 @@
 import colorsys
 import numpy as np
 import PIL
-from musique_manager import *
+from utils_synthese import *
 import matplotlib.pyplot as plt
 
 def find_nearest(array: list | np.ndarray, value: float | int) -> float | int:
