@@ -13,6 +13,8 @@ class Fenetre(tk.Tk):
         self.image_pil =  None 
         self.photo_image = None 
         self.midi_output = 'image_musique.mid'
+        self.color_midi = print('nommanquant')
+        self.color_wav = 'chord.wav'
         self.wav_output = 'ouput.wav'
         self.var_plot = tk.BooleanVar()
         
@@ -24,15 +26,23 @@ class Fenetre(tk.Tk):
         self.bouton_sonifier = tk.Button(self, text="Sonifier", command=self.sonifier_image, state=tk.DISABLED, width=13)
         self.bouton_sonifier.place(x=0,y=30)
 
+        
+
         # Bouton pour jouer le son
         self.bouton_jouer = tk.Button(self, text="Jouer", command=self.play, state=tk.DISABLED, width=13)
         self.bouton_jouer.place(x=0,y=60)
-        
+
+        # Bouton pour ajouter couleur
+        self.bouton_couleur = tk.Button(self, text="Couleur", command=self.couleur)
+        self.bouton_couleur.place(x=0, y=90)
+
+        #Bouton pour jouer couleurs
+        self.bouton_jouer_couleur = tk.Button(self, text="Jouer Couleur", command=self.playcolor, state=tk.DISABLED, width=13)
+        self.plot_box.place(x=0, y=120)
+
         # Checkbox pour afficher ou non les graphes
         self.plot_box = tk.Checkbutton(self, text="Afficher graphes", variable=self.var_plot, onvalue=True, offvalue=False)
-        self.plot_box.place(x=0, y=90)
-
-
+        self.plot_box.place(x=0, y=150)
 
         
         self.label_image = tk.Label(self)
@@ -53,6 +63,14 @@ class Fenetre(tk.Tk):
         sonifier(self.image_pil, self.var_plot.get())
         to_piano_wav(self.midi_output, self.wav_output)
         self.bouton_jouer.config(state=tk.NORMAL)
+
+    def couleur(self): 
+        histogramme_couleur(self.image_pil)
+        colors_to_wav_file(self.color_midi, self.color_wav)
+        self.bouton_jouer_couleur.config(state=tk.NORMAL)
+
+    def playcolor(self):
+        os.system(f"aplay -q {self.color_wav}")
 
     def play(self):
         os.system(f"aplay -q {self.wav_output}")
