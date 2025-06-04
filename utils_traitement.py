@@ -3,7 +3,7 @@ import numpy as np
 from PIL import Image
 
 
-def convertir_en_contour_v2(image: np.ndarray, disk_size: int=5) -> np.ndarray:
+def convertir_en_contour(image: np.ndarray, disk_size: int=5) -> np.ndarray:
     """Traite l'image pour récupérer les contours
 
     Etapes :

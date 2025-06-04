@@ -44,19 +44,18 @@ def deplacement_frot(L: int, frequence: int, x: int, duree: int, fs: int, N_max:
     return u_range, t_range
 
 
-def note(f: int, duree: int, amplitude: int, fe: int) -> np.ndarray:
+def note(f: int, duree: int, fe: int) -> np.ndarray:
     """Génère le signal d'une note de guitare pour une certaine fréquence.
 
     Args:
         f (int): Fréquence du signal à synthétiser (en Hz)
         duree (int): La durée du signal souhaité (en secondes)
-        amplitude (int): L'amplitude du signal
         fe (int): La fréquence d'échantillonage (en Hz)
 
     Returns:
         np.ndarray: Le signal correspondant à la note générée
     """
-    return amplitude * deplacement_frot(L, f, L/2, duree, fe, N_max=7)[0]
+    return deplacement_frot(L, f, L/2, duree, fe, N_max=7)[0]
 
 
 def accord(signals: list[np.ndarray]) -> np.ndarray:

@@ -3,7 +3,7 @@ from mido import Message, MidiFile, MidiTrack
 import numpy as np
 import pretty_midi
 from scipy.io.wavfile import write
-from utils_traitement import convertir_en_contour_v2
+from utils_traitement import convertir_en_contour
 from couleurs_vers_son import linear_range_mapping
 import matplotlib.pyplot as plt
 
@@ -90,6 +90,25 @@ def find_note(position: int) -> int:
     """
     return int(linear_range_mapping(position, (0, 70), (40, 82)))
 
+
+do_major = np.array([40, 42, 44, 45, 47, 49, 51])
+
+full_notes = np.concatenate((do_major + 12, do_major + 12 * 2, do_major + 12 * 3))
+
+
+def find_note_do_majeur(position: int) -> int:
+    """Renvoie le numero de la note correspondant à la position dans l'image, (on fait un mapping linéaire de [0; 70] à [40;82])
+
+    Args:
+        position (int): La ligne de la note
+
+    Returns:
+        int: Le numéro de la note
+    """
+    return full_notes[int(linear_range_mapping(position, (0, 70), (0, len(full_notes)-1)))]
+
+
+
 def sonifier(image: Image, show: bool=False, output_name: str='image_musique.mid') -> None:
     """Transforme une image en fichier MIDI
 
@@ -104,14 +123,14 @@ def sonifier(image: Image, show: bool=False, output_name: str='image_musique.mid
     mid.tracks.append(track)
     track.append(Message('program_change', program=0, time=0))
 
-    img = convertir_en_contour_v2(np.asarray(image), 10)
+    img = convertir_en_contour(np.asarray(image), 10)
 
     if show: plt.figure()
     if show: plt.imshow(img, cmap="gray")
     if show: plt.show()
 
     for y in np.transpose(img):
-        chord = [ find_note(i)
+        chord = [ find_note_do_majeur(i)
                   for i, x in enumerate(reversed(y)) 
                   if x>0 ]
         add_chord_to_track(track, chord, 50)

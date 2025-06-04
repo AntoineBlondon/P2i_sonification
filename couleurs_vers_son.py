@@ -3,6 +3,10 @@ import numpy as np
 import PIL
 from utils_synthese import *
 import matplotlib.pyplot as plt
+import os
+from scipy.io.wavfile import write, read
+
+notes = {}
 
 def find_nearest(array: list | np.ndarray, value: float | int) -> float | int:
     """Trouve la valeur la plus proche dans la liste
@@ -108,9 +112,9 @@ def histogramme_couleur(image: PIL.Image, show: bool=False) -> dict[int, int]:
 
     for y in range(image.height):
         for x in range(image.width):
-            color = image.getpixel((x, y))
-            freq = hsv_to_chord(rgb2hsv(color), hue_degree_to_frequency)
-            histogramme_couleurs[freq] = histogramme_couleurs.get(freq, 0) + 1
+            hsv_color = rgb2hsv(image.getpixel((x, y)))
+            freq = hsv_to_chord(hsv_color, hue_degree_to_frequency)
+            histogramme_couleurs[freq] = histogramme_couleurs.get(freq, 0) + hsv_color[1]
 
 
 
@@ -131,12 +135,31 @@ def colors_to_wav_file(histogramme_couleurs: dict[int, int], output_name: str='c
         histogramme_couleurs (dict[int, int]): L'histogramme des couleurs associé à une image
         output_name (str, optional): Le nom du fichier à enregistrer. Defaults to 'chord.wav'.
     """
-    notes = []
+    load_notes()
+    notes_list = []
     for freq, intensity in histogramme_couleurs.items():
-        notes.append(note(freq, duree=5, amplitude=10*intensity, fe=11025))
+        notes_list.append(10 * intensity * notes[freq])
 
-    final_chord = accord(notes)
+    final_chord = accord(notes_list)
     writewavfile(output_name, final_chord, 11025)
 
 
+def preload_notes():
+    os.makedirs('notes', exist_ok=True)
+    for freq in hue_degree_to_frequency.values():
+        wave = note(freq, duree=5, fe=11025)
+        filepath = os.path.join('notes', f"{freq:.2f}.wav")
+        write(filepath, 11025, (wave * 32767).astype(np.int16)) 
 
+def load_notes():
+    global notes
+    for filename in os.listdir('notes'):
+        if filename.endswith(".wav"):
+            freq = float(filename.replace(".wav", ""))
+            filepath = os.path.join("notes", filename)
+            rate, data = read(filepath)
+            notes[freq] = data
+
+
+if __name__ == '__main__':
+    preload_notes()
