@@ -16,9 +16,9 @@ Ce projet permet de transformer des images en musique en utilisant des technique
 L’interface permet :
 
 * de charger une image (formats supportés : PNG, JPG, JPEG, BMP)
-* de générer une musique à partir de l’image
+* de générer une musique à partir de l’image de deux manières différentes (par contours ou par couleurs)
 * de jouer le son produit
-* d’afficher les étapes du traitement d’image si l’option est activée (à compléter si le bouton de checkbox est relié)
+* d’afficher les étapes du traitement d’image si l’option est activée
 
 ## Structure du projet
 
